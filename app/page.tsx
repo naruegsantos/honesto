@@ -227,11 +227,23 @@ export default function Home() {
               </div>
             </div>
             <div className="text-2xl h-10 w-full max-w-[45vw] flex items-end gap-2">
-              Vendidos <span className={clsx(editionResume.sold.percent <= 10 ? 'bg-red-300' : editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 'bg-green-300', `text-2xl px-2 w-fit`)}>{editionResume.sold.value}</span>
+              Vendidos
+               <span className={clsx(
+                editionResume.sold.percent <= 10 ? 'bg-red-300' : 
+                editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 
+                'bg-green-300', `text-2xl px-2 w-fit`)}>
+                  {editionResume.sold.value}
+                </span>
               <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
                 <span className="text-sm">{editionResume.sold.percent}%</span>
                 <div className="w-full h-3 bg-gray-300 ">
-                  <div className={clsx(editionResume.sold.percent <= 10 ? 'bg-red-500' : editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 'bg-green-300'  ,`w-[${editionResume.sold.percent}%] h-full`)}></div>
+                  <div className={clsx(
+                    editionResume.sold.percent <= 10 ? 'bg-red-500' : 
+                    editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 
+                    'bg-green-300'  ,` h-full trasition-[width] duration-150`)}
+                    style={{
+                      width:`${editionResume.sold.percent}%`
+                    }}></div>
                 </div>
               </div>
             </div>
@@ -248,7 +260,13 @@ export default function Home() {
               <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
                 <span className="text-sm">{toBRL(editionResume.totalRaised)} / {toBRL(edition.totalAmount * 3)}</span>
                 <div className="w-full h-3 bg-gray-300 ">
-                  <div className={clsx(editionResume.compliance <= 10 ? 'bg-red-500' : editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 'bg-green-300' ,`w-[${editionResume.compliance}%] h-full`)}></div>
+                  <div className={clsx(
+                    editionResume.compliance <= 10 ? 'bg-red-500' : 
+                    editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 
+                    'bg-green-300' ,'h-full trasition-[width] duration-150')}
+                    style={{
+                      width:`${editionResume.compliance}%`
+                    }}></div>
                 </div>
               </div>
               {/* <Progress value={sold*100/(edition? edition.totalAmount : 1)} className="w-full max-w-sm">
