@@ -184,7 +184,7 @@ export default function Home() {
   return (
     edition ?
     <>
-      <header className="h-12 px-4 bg-[#FF0000] text-white flex justify-between items-center">
+      <header className="h-12 w-screen px-4 bg-[#FF0000] text-white flex justify-between items-center">
 
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
@@ -209,32 +209,32 @@ export default function Home() {
       </header>
 
       {/* resumo */}
-      <main className="p-6">
+      <main className="p-4 md:p-6">
         <section className="flex justify-between">
           <h2 className="text-2xl px-8 py-2 font-semibold bg-gray-300 w-fit ">Resumo</h2>
           <div>filtro</div>
         </section>
-        <section className=" flex justify-between divide-gray-300 divide-x-2">
-          <section className="my-10 w-[47%] flex flex-col gap-2">
-            <div className="text-3xl w-fit flex gap-20 items-center">
-              <div className="flex gap-2 items-center">
+        <section className="flex flex-col md:flex-row justify-between gap-8 md:gap-6 divide-gray-300 md:divide-x-2 my-10">
+          <section className="w-full md:w-1/2 flex flex-col gap-1">
+            <div className="text-xl md:text-3xl gap-4 md:gap-2 w-full  flex">
+              <div className="flex w-full gap-2 items-center">
                 Recebidos 
-                <span className="text-3xl px-4  py-2  bg-gray-300 w-fit">{edition?.totalAmount}</span>
+                <span className="px-4  py-2  bg-gray-300 w-fit">{edition?.totalAmount}</span>
               </div>
-              <div className="flex gap-2 items-center">
+              <div className="flex w-full gap-2 items-center">
                 Sobras 
-                <span className="text-3xl px-4  py-2 bg-gray-300 w-fit">{edition? edition.totalAmount - editionResume.sold.value : 0}</span>
+                <span className="  px-4  py-2 bg-gray-300 w-fit">{edition? edition.totalAmount - editionResume.sold.value : 0}</span>
               </div>
             </div>
-            <div className="text-2xl h-10 w-full max-w-[45vw] flex items-end gap-2">
+            <div className="text-lg md:text-2xl h-10 w-full md:max-w-[45vw] flex items-end gap-2">
               Vendidos
-               <span className={clsx(
+              <span className={clsx(
                 editionResume.sold.percent <= 10 ? 'bg-red-300' : 
                 editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 
-                'bg-green-300', `text-2xl px-2 w-fit`)}>
+                'bg-green-300', `px-2 w-fit`)}>
                   {editionResume.sold.value}
-                </span>
-              <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
+              </span>
+              <div className="h-full w-full md:max-w-[30vw] flex flex-col justify-end">
                 <span className="text-sm">{editionResume.sold.percent}%</span>
                 <div className="w-full h-3 bg-gray-300 ">
                   <div className={clsx(
@@ -248,17 +248,24 @@ export default function Home() {
               </div>
             </div>
           </section>
-          <section className="my-10 w-[47%] flex flex-col gap-2">
-            <div className="text-3xl w-fit flex gap-20 items-center">
+          <section className="w-full md:w-1/2 flex flex-col gap-2">
+            <div className="text-xl md:text-3xl w-fit flex  items-center">
               <div className="flex gap-2 items-center">
                 Total arrecadado 
-                <span className="text-3xl px-4 py-2 bg-gray-300 w-fit">{toBRL(editionResume.totalRaised)}</span>
+                <span className="px-4 py-2 bg-gray-300 w-fit">{toBRL(editionResume.totalRaised)}</span>
               </div>
             </div>
-            <div className="text-2xl h-10 w-full max-w-[45vw] flex items-end gap-2">
-              Adimplência <span className={clsx(editionResume.compliance <= 10 ? 'bg-red-300' : editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 'bg-green-300' ,`text-2xl px-2 w-fit`)}>{editionResume.compliance}%</span>
-              <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
-                <span className="text-sm">{toBRL(editionResume.totalRaised)} / {toBRL(edition.totalAmount * 3)}</span>
+            <div className="text-lg md:text-2xl h-10 w-full  md:max-w-[45vw] flex items-end gap-2">
+              Adimplência 
+              <span className={clsx(
+                editionResume.compliance <= 10 ? 'bg-red-300' :
+                editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 
+                'bg-green-300' ,
+                ` px-2 w-fit`)}>
+                  {editionResume.compliance}%
+              </span>
+              <div className="h-full w-full md:max-w-[30vw] flex flex-col justify-end">
+                <span className="text-sm">{toBRL(editionResume.totalRaised)}/{toBRL(edition.totalAmount * 3)}</span>
                 <div className="w-full h-3 bg-gray-300 ">
                   <div className={clsx(
                     editionResume.compliance <= 10 ? 'bg-red-500' : 
@@ -300,7 +307,6 @@ export default function Home() {
               ))}
             </TableBody>
           </Table>
-
           {/* gráficos */}
           <div></div>
         </section>
