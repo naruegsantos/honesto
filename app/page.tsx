@@ -184,11 +184,11 @@ export default function Home() {
   return (
     edition ?
     <>
-      <header className="h-12 w-screen px-4 bg-[#FF0000] text-white flex justify-between items-center">
+      <header className="fixed md:static bottom-0 h-12 w-screen px-2 md:px-4 bg-[#FF0000] text-white flex justify-between items-center">
 
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
-        <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-64">
+        <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-60 md:min-w-64">
           <Select value={edition?.number} onValueChange={(value) => selectEdition(value)} items={editions.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getUTCFullYear()}`, value:i.number}))}>
             <SelectTrigger className="border-none w-fit">
               <SelectValue placeholder='Selecione a edição' />
