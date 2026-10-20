@@ -55,6 +55,16 @@ interface IActivity {
 
 const editions = [
   {
+    id: 1,
+    name: 'Outubro 1',
+    number: '342',
+    startDate: '2026-10-01',
+    endDate: '2026-10-15',
+    totalAmount: 150,
+    individualAmount: 50,
+    activity_amount: 100,
+  },
+  {
     id: 2,
     name: 'Outubro 2',
     number: '343',
@@ -64,16 +74,7 @@ const editions = [
     individualAmount: 41,
     activity_amount: 172,
   },
-  {
-    id: 1,
-    name: 'Outubro 1',
-    number: '342',
-    startDate: '2026-10-01',
-    endDate: '2026-10-15',
-    totalAmount: 150,
-    individualAmount: 50,
-    activity_amount: 100,
-  }, 
+ 
 ]
 
 const activities:IActivity[] = [
@@ -121,10 +122,9 @@ const activities:IActivity[] = [
 
 
 export default function Home() {
-  const [edition, setEdition] = useState<IEdition | null>(editions[0])
+  const [edition, setEdition] = useState<IEdition | null>(editions.findLast((i) => i == i) || null)
   
   //  editionResume tem que vir do BFF junto com os dados da edição
-
   interface IEditionResume {
     sold: {
       value:number
