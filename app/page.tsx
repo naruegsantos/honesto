@@ -14,6 +14,16 @@ import {
 } from "@/components/ui/select"
 
 import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+import {
   Progress,
   ProgressLabel,
   ProgressValue,
@@ -39,6 +49,7 @@ interface IActivity {
   date:string
   desc:string
   sold: number
+  place?:string
   donation: number
 }
 
@@ -71,7 +82,8 @@ const activities:IActivity[] = [
     id:1,
     editionId:2,
     date:'2026-10-18',
-    desc:'Brigada',
+    desc:'Brigada no ato pela democracia',
+    place:'Centro',
     sold:12,
     donation:3
   },
@@ -80,6 +92,25 @@ const activities:IActivity[] = [
     editionId:2,
     date:'2026-10-18',
     desc:'Panfletagem',
+    place:'Costeira',
+    sold:2,
+    donation:4
+  },
+  {
+    id:3,
+    editionId:2,
+    date:'2026-10-18',
+    desc:'Brigada no ato pela democracia',
+    place:'Centro',
+    sold:12,
+    donation:3
+  },
+  {
+    id:4,
+    editionId:2,
+    date:'2026-10-18',
+    desc:'Panfletagem',
+    place:'Costeira',
     sold:2,
     donation:4
   },
@@ -92,7 +123,34 @@ const activities:IActivity[] = [
 
 export default function Home() {
   const [edition, setEdition] = useState<IEdition | null>(editions[0])
-  const sold = activities.filter((i) => i.editionId == edition?.id).reduce((total, i) => total + i.sold, 0)
+  
+  //  editionResume tem que vir do BFF junto com os dados da edição
+
+  interface IEditionResume {
+    sold: {
+      value:number
+      percent:number
+    },
+    totalRaised: number
+    donationValue:number
+    compliance:number
+  }
+  
+  const soldValue = activities.filter((i) => i.editionId == edition?.id).reduce((total, i) => total + i.sold, 0);
+  const soldPercent = +((soldValue * 100) / (edition ? edition.totalAmount : 1)).toFixed(0);
+  const donationValue = activities.filter((i) => i.editionId == edition?.id).reduce((total, i) => total + i.donation, 0);
+  const totalRaised = soldValue * 3 + donationValue;
+  const compliance = edition ? +((totalRaised * 100) / (edition.totalAmount * 3)).toFixed(0) : 0
+
+  const editionResume: IEditionResume = {
+    sold: {
+      value: soldValue,
+      percent: soldPercent,
+    },
+    totalRaised: totalRaised,
+    donationValue: donationValue,
+    compliance: compliance,
+  };
 
   function editionNavigation(direction:string) {
     const currentedition = editions.find((i) => i.number == edition?.number)
@@ -119,10 +177,9 @@ export default function Home() {
   const toBRL = (value:number):string => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
       value,
     ) 
+  
 
-  function totalRaised() {
-    return sold*3 + (activities.filter((i) => i.editionId == edition?.id).reduce((total, i) => total + i.donation, 0)) 
-  }
+  
 
   return (
     edition ?
@@ -153,11 +210,11 @@ export default function Home() {
 
       {/* resumo */}
       <main className="p-6">
-        <section className="flex justify-between  outline">
+        <section className="flex justify-between">
           <h2 className="text-2xl px-8 py-2 font-semibold bg-gray-300 w-fit ">Resumo</h2>
           <div>filtro</div>
         </section>
-        <section className="outline flex justify-evenly divide-gray-300 divide-x-2">
+        <section className=" flex justify-between divide-gray-300 divide-x-2">
           <section className="my-10 w-[47%] flex flex-col gap-2">
             <div className="text-3xl w-fit flex gap-20 items-center">
               <div className="flex gap-2 items-center">
@@ -166,35 +223,32 @@ export default function Home() {
               </div>
               <div className="flex gap-2 items-center">
                 Sobras 
-                <span className="text-3xl px-4  py-2 bg-gray-300 w-fit">{edition? edition.totalAmount - sold : 0}</span>
+                <span className="text-3xl px-4  py-2 bg-gray-300 w-fit">{edition? edition.totalAmount - editionResume.sold.value : 0}</span>
               </div>
             </div>
             <div className="text-2xl h-10 w-full max-w-[45vw] flex items-end gap-2">
-              Vendidos <span className="text-2xl px-2  bg-yellow-300 w-fit">{sold}</span>
+              Vendidos <span className={clsx(editionResume.sold.percent <= 10 ? 'bg-red-300' : editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 'bg-green-300', `text-2xl px-2 w-fit`)}>{editionResume.sold.value}</span>
               <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
-                <span className="text-sm">{(sold*100/(edition? edition.totalAmount : 1)).toFixed(0)}%</span>
+                <span className="text-sm">{editionResume.sold.percent}%</span>
                 <div className="w-full h-3 bg-gray-300 ">
-                  <div className={clsx(`w-[${(sold*100/(edition? edition.totalAmount : 1)).toFixed(0)}%] h-full bg-yellow-300`)}></div>
+                  <div className={clsx(editionResume.sold.percent <= 10 ? 'bg-red-500' : editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 'bg-green-300'  ,`w-[${editionResume.sold.percent}%] h-full`)}></div>
                 </div>
               </div>
-              {/* <Progress value={sold*100/(edition? edition.totalAmount : 1)} className="w-full max-w-sm">
-                <ProgressValue />
-              </Progress> */}
             </div>
           </section>
           <section className="my-10 w-[47%] flex flex-col gap-2">
             <div className="text-3xl w-fit flex gap-20 items-center">
               <div className="flex gap-2 items-center">
                 Total arrecadado 
-                <span className="text-3xl px-4 py-2 bg-gray-300 w-fit">{toBRL(totalRaised())}</span>
+                <span className="text-3xl px-4 py-2 bg-gray-300 w-fit">{toBRL(editionResume.totalRaised)}</span>
               </div>
             </div>
             <div className="text-2xl h-10 w-full max-w-[45vw] flex items-end gap-2">
-              Adimplência <span className="text-2xl px-2  bg-yellow-300 w-fit">{sold}</span>
+              Adimplência <span className={clsx(editionResume.compliance <= 10 ? 'bg-red-300' : editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 'bg-green-300' ,`text-2xl px-2 w-fit`)}>{editionResume.compliance}%</span>
               <div className="h-full w-full max-w-[30vw] flex flex-col justify-end">
-                <span className="text-sm">{(totalRaised()*100/(edition.totalAmount*3)).toFixed(0)}%</span>
+                <span className="text-sm">{toBRL(editionResume.totalRaised)} / {toBRL(edition.totalAmount * 3)}</span>
                 <div className="w-full h-3 bg-gray-300 ">
-                  <div className={clsx(`w-[${(totalRaised()*100/(edition.totalAmount*3)).toFixed(0)}%] h-full bg-yellow-300`)}></div>
+                  <div className={clsx(editionResume.compliance <= 10 ? 'bg-red-500' : editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 'bg-green-300' ,`w-[${editionResume.compliance}%] h-full`)}></div>
                 </div>
               </div>
               {/* <Progress value={sold*100/(edition? edition.totalAmount : 1)} className="w-full max-w-sm">
@@ -203,14 +257,36 @@ export default function Home() {
             </div>
           </section>
         </section>
-      </main>
-      <section>
-        {/* tabela */}
-        <div></div>
+        <section className="flex justify-between">
+          {/* tabela */}
+          <Table className="w-[47%]">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="">Data</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Local</TableHead>
+                <TableHead className="">Jornais vendidos</TableHead>
+                <TableHead className="">Doações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="">
+              {activities.filter((i) => i.editionId == edition?.id).map((i) => (
+                <TableRow className="odd:bg-gray-200">
+                  <TableCell className="font-medium">{new Date(i.date).toLocaleDateString('pt-BR')}</TableCell>
+                  <TableCell>{i.desc}</TableCell>
+                  <TableCell>{i.place}</TableCell>
+                  <TableCell className="">{i.sold}</TableCell>
+                  <TableCell className="">{i.donation}</TableCell>
+                </TableRow>
+                  
+              ))}
+            </TableBody>
+          </Table>
 
-        {/* gráficos */}
-        <div></div>
-      </section>
+          {/* gráficos */}
+          <div></div>
+        </section>
+      </main>
     </>
     : <></>
   );
