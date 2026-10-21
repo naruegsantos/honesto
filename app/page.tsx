@@ -29,7 +29,7 @@ import {
   ProgressValue,
 } from "@/components/ui/progress"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clsx } from "cn";
 
 interface IEdition {
@@ -53,29 +53,6 @@ interface IActivity {
   donation: number
 }
 
-const editions = [
-  {
-    id: 1,
-    name: 'Outubro 1',
-    number: '342',
-    startDate: '2026-10-01',
-    endDate: '2026-10-15',
-    totalAmount: 150,
-    individualAmount: 50,
-    activity_amount: 100,
-  },
-  {
-    id: 2,
-    name: 'Outubro 2',
-    number: '343',
-    startDate: '2026-10-16',
-    endDate: '2026-10-31',
-    totalAmount: 172,
-    individualAmount: 41,
-    activity_amount: 172,
-  },
- 
-]
 
 const activities:IActivity[] = [
   {
@@ -122,7 +99,8 @@ const activities:IActivity[] = [
 
 
 export default function Home() {
-  const [edition, setEdition] = useState<IEdition | null>(editions.findLast((i) => i == i) || null)
+  const [editions, setEditions] = useState<IEdition[] | null>()
+  const [edition, setEdition] = useState<IEdition | null>()
   
   //  editionResume tem que vir do BFF junto com os dados da edição
   interface IEditionResume {
@@ -152,9 +130,9 @@ export default function Home() {
   };
 
   function editionNavigation(direction:string) {
-    const currentedition = editions.find((i) => i.number == edition?.number)
+    const currentedition = editions?.find((i) => i.number == edition?.number)
     let next
-    if(currentedition) {
+    if(currentedition && editions) {
       next = editions[editions.indexOf(currentedition) + (direction == 'next'? 1 : -1) ]
     } else {
       console.log(`edição nula ${currentedition}`, )
@@ -167,18 +145,37 @@ export default function Home() {
   function selectEdition(value:any) {
     console.log(value == '338');
     
-    const selected = editions.find((i) => i.number == value)
+    const selected = editions?.find((i) => i.number == value)
     console.log(selected);
     
     setEdition(selected || null)
   }
 
-  const toBRL = (value:number):string => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-      value,
-    ) 
-  
+  const toBRL = (value:number):string => new Intl.NumberFormat(
+    "pt-BR", 
+    {
+      style: "currency", 
+      currency: "BRL" 
+    }
+  ).format(value) 
 
-  
+  useEffect(() => {
+    const fetchEditions = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/editions`
+      );
+      const editionsList = await response.json()
+
+      setEditions([...editionsList])
+      setEdition([...editionsList].findLast((i) => i))
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+    };
+
+    fetchEditions();
+  }, []);
 
   return (
     edition ?
@@ -188,14 +185,14 @@ export default function Home() {
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
         <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-60 md:min-w-64">
-          <Select value={edition?.number} onValueChange={(value) => selectEdition(value)} items={editions.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getUTCFullYear()}`, value:i.number}))}>
+          <Select value={edition?.number} onValueChange={(value) => selectEdition(value)} items={editions?.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getFullYear()}`, value:i.number}))}>
             <SelectTrigger className="border-none w-fit">
               <SelectValue placeholder='Selecione a edição' />
             </SelectTrigger>
             <SelectContent className={"w-fit"}>
               <SelectGroup>
                 <SelectLabel>Selecione</SelectLabel>
-                  {editions.map((i) => (
+                  {editions?.map((i) => (
                     <SelectItem key={i.id} value={i.number}>
                       {i.number} - {i.name} - {new Date(i.startDate).getUTCFullYear()}
                     </SelectItem>
@@ -230,7 +227,7 @@ export default function Home() {
               <span className={clsx(
                 editionResume.sold.percent <= 10 ? 'bg-red-300' : 
                 editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 
-                'bg-green-300', `px-2 w-fit`)}>
+                'bg-green-300', `px-2 w-fit `)}>
                   {editionResume.sold.value}
               </span>
               <div className="h-full w-full md:max-w-[30vw] flex flex-col justify-end">
@@ -239,7 +236,7 @@ export default function Home() {
                   <div className={clsx(
                     editionResume.sold.percent <= 10 ? 'bg-red-500' : 
                     editionResume.sold.percent <= 80 && editionResume.sold.percent > 10  ? 'bg-yellow-300' : 
-                    'bg-green-300'  ,` h-full trasition-[width] duration-150`)}
+                    'bg-green-300'  ,` h-full trasition-[width] duration-150 max-w-full`)}
                     style={{
                       width:`${editionResume.sold.percent}%`
                     }}></div>
@@ -269,7 +266,7 @@ export default function Home() {
                   <div className={clsx(
                     editionResume.compliance <= 10 ? 'bg-red-500' : 
                     editionResume.compliance <= 80 && editionResume.compliance> 10  ? 'bg-yellow-300' : 
-                    'bg-green-300' ,'h-full trasition-[width] duration-150')}
+                    'bg-green-300' ,'h-full trasition-[width] duration-150 max-w-full')}
                     style={{
                       width:`${editionResume.compliance}%`
                     }}></div>
@@ -295,7 +292,7 @@ export default function Home() {
             </TableHeader>
             <TableBody className="">
               {activities.filter((i) => i.editionId == edition?.id).map((i) => (
-                <TableRow className="odd:bg-gray-200">
+                <TableRow key={i.id} className="odd:bg-gray-200">
                   <TableCell className="font-medium">{new Date(i.date).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell>{i.desc}</TableCell>
                   <TableCell>{i.place}</TableCell>
