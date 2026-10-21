@@ -1,3 +1,46 @@
+# Honesto
+| contanto a verdade desde 2026
+
+## Todo: 
+
+- [ x ] Conectar com a API
+- [ ] "ações" no grid de atividade
+  - [ ] visão expandida
+  - [ ] editar
+- [ ] gráficos
+- [ ] formulário de atividade
+  - [ ] monbile
+  - [ ] multitelas
+  - [ ] militante e responsável
+    - [ ] informe pronto
+    - [ ] informe do resposável + registro na base
+- [ ] usuários e organizações
+  - [ ] login
+  - [ ] filtragem de visualização por organização do usuário
+  - [ ] troca de organizações
+  - [ ] segurança
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
