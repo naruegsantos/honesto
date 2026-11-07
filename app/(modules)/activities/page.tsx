@@ -28,6 +28,7 @@ interface ISale {
     total: number
     pix: number
     cash: number
+    edited?: boolean
   }
   edition: string
   donation?: number
@@ -53,15 +54,25 @@ export default function Page() {
   
   const [currentEdition, setCurrentEdition] = useState<string>("")
 
-  const [saleForm, setSaleForm] = useState<ISale>(
-     {
+  const emptyForm:ISale = {
       sold: 0, 
-      payment: { total: 0, pix: 0, cash: 0 }, 
+      payment: { total: 0, pix: 0, cash: 0, edited:false }, 
       edition: currentEdition, 
       paymentFormat: "pix",
       donation:0
     }
-  )
+  const [saleForm, setSaleForm] = useState<ISale>(emptyForm)
+
+  function calcPaymentBySold(sold:number) {
+    const paymentData = saleForm.payment.edited?
+    saleForm.payment 
+      : {
+        total: sold*3,
+        pix: saleForm.paymentFormat == 'pix' ? sold*3 : 0,
+        cash:saleForm.paymentFormat == 'cash' ? sold*3 : 0
+      }
+    return paymentData
+  }
 
   function  addSale(){
     const saleTotalValue = saleForm.payment.cash + saleForm.payment.pix
@@ -116,17 +127,21 @@ export default function Page() {
         <div className="bg-white p-2 rounded-sm flex flex-col gap-2 w-full max-w-3xl">
           <div className="flex gap-3 justify-between place-items-center">
             <label className="flex-none text-lg" htmlFor="sold">Jornais Vendidos</label>
-            <input inputMode="numeric" value={saleForm.sold} onChange={(e) => setSaleForm({...saleForm, sold:+e.target.value.replace(/[^0-9]/g, '')})} className="rounded-sm pl-4 w-1/2 bg-gray-300 text-lg p-1" name="sold" type="nmber" />
+            <input inputMode="numeric" value={saleForm.sold} onChange={(e) => {
+              const value = +e.target.value.replace(/[^0-9]/g, '')
+              setSaleForm({...saleForm, sold:value, payment:calcPaymentBySold(value)})
+              
+            }} className="rounded-sm pl-4 w-1/2 bg-gray-300 text-lg p-1" name="sold" type="nmber" />
           </div>
           <div>
             <span className="text-lg">Forma de pagamento</span>
             <div className="flex justify-evenly">
               <div className="flex gap-2 ">
-                <input checked={saleForm.paymentFormat=="pix"} value={"pix"} onChange={() => setSaleForm({...saleForm, paymentFormat:'pix'})} id="sold" type="radio"/>
+                <input checked={saleForm.paymentFormat=="pix"} value={"pix"} onChange={() => {setSaleForm({...saleForm, paymentFormat:'pix', payment:{...saleForm.payment, pix:saleForm.sold? saleForm.sold*3 : saleForm.payment.cash, cash:0}})}} id="sold" type="radio"/>
                 <label htmlFor="sold">Pix</label>
               </div>
               <div className="flex gap-2 ">
-                <input checked={saleForm.paymentFormat=="cash"} value={"cash"} onChange={() => setSaleForm({...saleForm, paymentFormat:'cash'})} id="cash" type="radio" />
+                <input checked={saleForm.paymentFormat=="cash"} value={"cash"} onChange={() => {setSaleForm({...saleForm, paymentFormat:'cash', payment:{...saleForm.payment, cash:saleForm.sold? saleForm.sold*3 : saleForm.payment.pix, pix:0}})}} id="cash" type="radio" />
                 <label htmlFor="cash">Dinheiro</label>
               </div>
               <div className="flex gap-2 ">
@@ -138,20 +153,20 @@ export default function Page() {
           {saleForm.paymentFormat == 'mixed' ?
             <div className="flex flex-col gap-1 justify-between">
               <div className="flex gap-2 justify-between place-items-center">
+                <label className="flex-none text-lg" htmlFor="sold">No pix</label>
+                <input  value={toBRL(saleForm.payment.pix)} onChange={(e) => {
+                  const value = +e.target.value.replace(/\D/g, '')/100
+                  setSaleForm({...saleForm, payment: {...saleForm.payment, pix: value, edited:true}})
+
+                }} className="rounded-sm   w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
+              </div>
+              <div className="flex gap-2 justify-between place-items-center">
                 <label className="flex-none text-lg" htmlFor="sold">Em dinheiro</label>
                 <input  value={toBRL(saleForm.payment.cash)} onChange={(e) => {
                   const value = +e.target.value.replace(/\D/g, '')/100
                   
-                  setSaleForm({...saleForm, payment: {...saleForm.payment, cash: value,}, donation:saleForm.payment.total })
+                  setSaleForm({...saleForm, payment: {...saleForm.payment, cash: value, edited:true}, donation:saleForm.payment.total })
                 }} className="rounded-sm  flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
-              </div>
-              <div className="flex gap-2 justify-between place-items-center">
-                <label className="flex-none text-lg" htmlFor="sold">No pix</label>
-                <input  value={toBRL(saleForm.payment.pix)} onChange={(e) => {
-                  const value = +e.target.value.replace(/\D/g, '')/100
-                  setSaleForm({...saleForm, payment: {...saleForm.payment, pix: value}})
-
-                }} className="rounded-sm   w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
               </div>
             </div>
           :
@@ -162,9 +177,10 @@ export default function Page() {
               const paymentData = {
                 total: value,
                 pix: saleForm.paymentFormat == 'pix' ? value : 0,
-                cash:saleForm.paymentFormat == 'cash' ? value : 0
+                cash:saleForm.paymentFormat == 'cash' ? value : 0,
+                edited: true
               }
-              setSaleForm({...saleForm, payment:paymentData})
+              setSaleForm({...saleForm, payment:paymentData,})
             }} className="rounded-sm pl-2 flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
           </div>
           }
@@ -174,7 +190,8 @@ export default function Page() {
               <SelectEdition onChange={(value) => setSaleForm({...saleForm, edition:value})}  edition={saleForm.edition} items={ editions? editions.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getFullYear()}`, value:i.number})) : []} />
             </div>
             
-              <div className="w-full flex justify-end ">
+              <div className="w-full flex justify-end gap-2">
+                <Button onClick={() => setSaleForm(emptyForm)} variant={"outline"}>limpar</Button>
                 <Button onClick={() => addSale()} variant={"default"}>confirmar</Button>
               </div>
           </div>
