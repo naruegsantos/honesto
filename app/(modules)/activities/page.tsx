@@ -29,6 +29,7 @@ interface ISale {
     cash: number
   }
   edition: string
+  donation?: number
   paymentFormat: 'pix' | 'mixed' | 'cash'
 }
 
@@ -56,14 +57,15 @@ export default function Page() {
       sold: 0, 
       payment: { total: 0, pix: 0, cash: 0 }, 
       edition: currentEdition, 
-      paymentFormat: "pix"
+      paymentFormat: "pix",
+      donation:0
     }
   )
 
   const addSale = () => {
-    setSales([...sales, saleForm]); 
+    setSales([...sales, {...saleForm, donation:saleForm.payment.total - saleForm.sold*3}]); 
     setSaleForm(
-      { sold: 0, payment: { total: 0, pix: 0, cash: 0 }, edition: currentEdition, paymentFormat: "pix" }
+      { sold: 0, payment: { total: 0, pix: 0, cash: 0 }, edition: currentEdition, paymentFormat: "pix", donation:0 }
     )
   }
   useEffect(() => {
@@ -128,7 +130,7 @@ export default function Page() {
                 <input  value={toBRL(saleForm.payment.cash)} onChange={(e) => {
                   const value = +e.target.value.replace(/\D/g, '')/100
                   
-                  setSaleForm({...saleForm, payment: {...saleForm.payment, cash: value}})
+                  setSaleForm({...saleForm, payment: {...saleForm.payment, cash: value,}, donation:saleForm.payment.total })
                 }} className="rounded-sm text-end flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
               </div>
               <div className="flex gap-2 justify-between place-items-center">
@@ -194,7 +196,7 @@ export default function Page() {
                 <TableRow key={index} className="odd:bg-gray-200">
                   <TableCell align="center" className="font-medium">{i.sold}</TableCell>
                   <TableCell align="center">{toBRL(i.payment.total)}</TableCell>
-                  <TableCell align="center">{toBRL(i.payment.total - i.sold * 3)}</TableCell>
+                  <TableCell align="center">{toBRL(i.donation??0)}</TableCell>
                   <TableCell align="center" className="">{i.edition}</TableCell>
                   <TableCell className="">{i.paymentFormat}</TableCell>
                 </TableRow>
@@ -207,6 +209,7 @@ export default function Page() {
       <Drawer showSwipeHandle>
         <DrawerTrigger>
           <div className="p-1 bg-black text-bold rounded-sm absolute bottom-5 right-5 w-fit text-white">
+            {saleForm.donation}
             <ReceiptText className=""/>
           </div>
         </DrawerTrigger>
@@ -234,6 +237,14 @@ export default function Page() {
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold">
+                      Contribuição: 
+                      <span className="py-1 px-4 rounded-sm border">
+                        {toBRL(sales.reduce((donation, i) => i.donation??0 + donation, 0))}
+                      </span>
+                    </h1>
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold">
                       Valor arrecadado: 
                       <span className="py-1 px-4 rounded-sm bg-muted">
                         {toBRL(sales.reduce((value, i) => value + i.payment.total, 0))}
