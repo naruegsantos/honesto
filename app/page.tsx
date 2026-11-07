@@ -174,7 +174,7 @@ export default function Home() {
   return (
     edition ?
     <>
-      <header className="fixed md:static top-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
+      <header className="static top-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
 
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
