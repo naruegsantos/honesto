@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
+import { ArrowBigLeft, ArrowBigRight, CircleArrowRight } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -34,6 +34,7 @@ import { clsx } from "cn";
 import { toBRL } from "@/lib/utils";
 import SelectEdition from "./components/selectEdition";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export interface IEdition {
   id: number,
@@ -173,7 +174,7 @@ export default function Home() {
   return (
     edition ?
     <>
-      <header className="fixed md:static bottom-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
+      <header className="fixed md:static top-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
 
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
@@ -286,6 +287,9 @@ export default function Home() {
           <div></div>
         </section>
       </main>
+      <div className="p-1 bg-black text-bold rounded-sm absolute bottom-5 right-5 w-fit text-white">
+        <CircleArrowRight onClick={() => redirect('/activities')} className="cursor-pointer"/>
+      </div>
     </>
     : <></>
   );

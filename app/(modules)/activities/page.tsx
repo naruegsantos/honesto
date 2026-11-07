@@ -18,6 +18,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { ReceiptText } from "lucide-react";
+import Image from "next/image";
+import { redirect } from "next/navigation";
 
 interface ISale {
   sold: number
@@ -88,7 +90,9 @@ export default function Page() {
 
   return (
     <>
-     
+      <div className="bg-accent" >
+        <Image onClick={() => redirect('/')} className="" height={50} width={50} src={'/averdade.svg'} alt="icone jornal a verdade"/>
+      </div>
       <div className="bg-accent p-3 flex flex-col gap-4 place-items-center">
         <div className="flex justify-center">
           <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-60 md:min-w-64">
