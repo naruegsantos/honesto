@@ -209,7 +209,6 @@ export default function Page() {
       <Drawer showSwipeHandle>
         <DrawerTrigger>
           <div className="p-1 bg-black text-bold rounded-sm absolute bottom-5 right-5 w-fit text-white">
-            {saleForm.donation}
             <ReceiptText className=""/>
           </div>
         </DrawerTrigger>
