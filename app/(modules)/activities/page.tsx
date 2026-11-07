@@ -63,7 +63,13 @@ export default function Page() {
   )
 
   const addSale = () => {
-    setSales([...sales, {...saleForm, donation:saleForm.payment.total - saleForm.sold*3}]); 
+    const saleTotalValue = saleForm.payment.cash + saleForm.payment.pix
+    setSales([...sales, {...saleForm, 
+      donation:saleTotalValue - saleForm.sold*3, 
+      payment: {...saleForm.payment, 
+        total:saleTotalValue
+      }
+    }]); 
     setSaleForm(
       { sold: 0, payment: { total: 0, pix: 0, cash: 0 }, edition: currentEdition, paymentFormat: "pix", donation:0 }
     )
@@ -208,7 +214,7 @@ export default function Page() {
       
       <Drawer showSwipeHandle>
         <DrawerTrigger>
-          <div className="p-1 bg-black text-bold rounded-sm absolute bottom-5 right-5 w-fit text-white">
+          <div className="p-1 bg-black text-bold rounded-sm fixed bottom-5 right-5 w-fit text-white">
             <ReceiptText className=""/>
           </div>
         </DrawerTrigger>
