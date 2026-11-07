@@ -17,9 +17,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { ReceiptText } from "lucide-react";
+import { ReceiptText, Trash } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { ConfirmationModal } from "@/lib/confirmationModal";
 
 interface ISale {
   sold: number
@@ -62,14 +63,16 @@ export default function Page() {
     }
   )
 
-  const addSale = () => {
+  function  addSale(){
     const saleTotalValue = saleForm.payment.cash + saleForm.payment.pix
-    setSales([...sales, {...saleForm, 
+    const updatedSales = [...sales, {...saleForm, 
       donation:saleTotalValue - saleForm.sold*3, 
       payment: {...saleForm.payment, 
         total:saleTotalValue
       }
-    }]); 
+    }]
+    setSales(updatedSales);
+    localStorage.setItem('sales', JSON.stringify(updatedSales))
     setSaleForm(
       { sold: 0, payment: { total: 0, pix: 0, cash: 0 }, edition: currentEdition, paymentFormat: "pix", donation:0 }
     )
@@ -79,10 +82,16 @@ export default function Page() {
       const apiUrl = process.env.DEV_ENV ? "http://localhost:3000/editions" : `${process.env.NEXT_PUBLIC_API_URL}/editions`
       const response = await fetch(apiUrl);
       const editionsList = await response.json()
+      
+      let lastEdition =[...editionsList].findLast((i) => i == i )?.number ?? ""
+      let localSales = JSON.parse(localStorage.getItem('sales') ?? "") || null
+      
+      localSales ? setSales(localSales) : localStorage.setItem('sales', JSON.stringify(sales))
 
       setEditions([...editionsList])      
-      let lastEdition =[...editionsList].findLast((i) => i == i )?.number ?? ""
       setCurrentEdition(lastEdition)
+
+      
       setSaleForm({...saleForm, edition:lastEdition})
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status}`);
@@ -92,9 +101,6 @@ export default function Page() {
     fetchEditions();
   }, []);
 
-    useEffect(() => {
-      console.log(saleForm);
-    },[saleForm])
 
   return (
     <>
@@ -211,7 +217,17 @@ export default function Page() {
           </Table>
         </div>
       }
+      <ConfirmationModal title="Limpar todos os items?" description="Depois de limpo, não há como recuperar" action={() => {setSales([]); localStorage.setItem('sales', JSON.stringify([]))}}>
+        <div className="p-1 bg-black text-bold rounded-sm fixed bottom-14 right-5 w-fit text-white">
+          <Trash className=""/>
+        </div>
+      </ConfirmationModal>
       
+
+
+
+
+
       <Drawer showSwipeHandle>
         <DrawerTrigger>
           <div className="p-1 bg-black text-bold rounded-sm fixed bottom-5 right-5 w-fit text-white">
