@@ -31,8 +31,11 @@ import {
 
 import { useEffect, useState } from "react";
 import { clsx } from "cn";
+import { toBRL } from "@/lib/utils";
+import SelectEdition from "./components/selectEdition";
+import Link from "next/link";
 
-interface IEdition {
+export interface IEdition {
   id: number,
   name: string,
   number: string,
@@ -96,8 +99,6 @@ const activities:IActivity[] = [
 
 
 
-
-
 export default function Home() {
   const [editions, setEditions] = useState<IEdition[] | null>()
   const [edition, setEdition] = useState<IEdition | null>()
@@ -142,7 +143,7 @@ export default function Home() {
     console.log(next);
   }
 
-  function selectEdition(value:any) {
+  function selectEdition(value:string) {
     console.log(value == '338');
     
     const selected = editions?.find((i) => i.number == value)
@@ -151,19 +152,11 @@ export default function Home() {
     setEdition(selected || null)
   }
 
-  const toBRL = (value:number):string => new Intl.NumberFormat(
-    "pt-BR", 
-    {
-      style: "currency", 
-      currency: "BRL" 
-    }
-  ).format(value) 
 
   useEffect(() => {
     const fetchEditions = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/editions`
-      );
+      const apiUrl = process.env.DEV_ENV ? "http://localhost:3000/editions" : `${process.env.NEXT_PUBLIC_API_URL}/editions`
+      const response = await fetch(apiUrl);
       const editionsList = await response.json()
 
       setEditions([...editionsList])
@@ -180,26 +173,12 @@ export default function Home() {
   return (
     edition ?
     <>
-      <header className="fixed md:static bottom-0 h-12 w-screen px-2 md:px-4 bg-[#FF0000] text-white flex justify-between items-center">
+      <header className="fixed md:static bottom-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
 
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
         <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-60 md:min-w-64">
-          <Select value={edition?.number} onValueChange={(value) => selectEdition(value)} items={editions?.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getFullYear()}`, value:i.number}))}>
-            <SelectTrigger className="border-none w-fit">
-              <SelectValue placeholder='Selecione a edição' />
-            </SelectTrigger>
-            <SelectContent className={"w-fit"}>
-              <SelectGroup>
-                <SelectLabel>Selecione</SelectLabel>
-                  {editions?.map((i) => (
-                    <SelectItem key={i.id} value={i.number}>
-                      {i.number} - {i.name} - {new Date(i.startDate).getUTCFullYear()}
-                    </SelectItem>
-                  ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SelectEdition onChange={(value) => selectEdition(value)} edition={edition?.number} items={ editions? editions.map((i) => ({label:`Edição ${i.number} - ${i.name} - ${new Date(i.startDate).getFullYear()}`, value:i.number})) : []} />
         </div>
         <ArrowBigRight  onClick={() => editionNavigation('next')} className="w-fit cursor-pointer" size={'30'}/>
       </header>
