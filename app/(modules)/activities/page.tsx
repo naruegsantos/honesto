@@ -104,7 +104,7 @@ export default function Page() {
         <div className="bg-white p-2 rounded-sm flex flex-col gap-2 w-full max-w-3xl">
           <div className="flex gap-3 justify-between place-items-center">
             <label className="flex-none text-lg" htmlFor="sold">Jornais Vendidos</label>
-            <input inputMode="numeric" value={saleForm.sold} onChange={(e) => setSaleForm({...saleForm, sold:+e.target.value.replace(/[^0-9]/g, '')})} className="rounded-sm text-end  w-1/2 bg-gray-300 text-lg p-1" name="sold" type="nmber" />
+            <input inputMode="numeric" value={saleForm.sold} onChange={(e) => setSaleForm({...saleForm, sold:+e.target.value.replace(/[^0-9]/g, '')})} className="rounded-sm pl-4 w-1/2 bg-gray-300 text-lg p-1" name="sold" type="nmber" />
           </div>
           <div>
             <span className="text-lg">Forma de pagamento</span>
@@ -131,7 +131,7 @@ export default function Page() {
                   const value = +e.target.value.replace(/\D/g, '')/100
                   
                   setSaleForm({...saleForm, payment: {...saleForm.payment, cash: value,}, donation:saleForm.payment.total })
-                }} className="rounded-sm text-end flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
+                }} className="rounded-sm  flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
               </div>
               <div className="flex gap-2 justify-between place-items-center">
                 <label className="flex-none text-lg" htmlFor="sold">No pix</label>
@@ -139,7 +139,7 @@ export default function Page() {
                   const value = +e.target.value.replace(/\D/g, '')/100
                   setSaleForm({...saleForm, payment: {...saleForm.payment, pix: value}})
 
-                }} className="rounded-sm text-end  w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
+                }} className="rounded-sm   w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
               </div>
             </div>
           :
@@ -153,7 +153,7 @@ export default function Page() {
                 cash:saleForm.paymentFormat == 'cash' ? value : 0
               }
               setSaleForm({...saleForm, payment:paymentData})
-            }} className="rounded-sm text-end flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
+            }} className="rounded-sm pl-2 flex-none w-1/2 bg-gray-300 text-lg p-1" name="sold" type="text" />
           </div>
           }
           <hr className=""/>
