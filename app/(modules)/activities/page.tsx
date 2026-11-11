@@ -1,7 +1,6 @@
 'use client'
 
 import SelectEdition from "@/app/components/selectEdition";
-import { IEdition } from "@/app/page";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { toBRL } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -22,6 +21,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ConfirmationModal } from "@/lib/confirmationModal";
 import Link from "next/link";
+import { IEdition } from "@/app/components/editionPannel";
 
 interface ISale {
   sold: number
