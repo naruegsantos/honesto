@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { IEdition } from "../page"
 
 interface ISelectEditionProps {
   edition: string
@@ -19,6 +18,8 @@ interface ISelectEditionProps {
 }
 
 export default function SelectEdition({edition, onChange, items}:ISelectEditionProps) {
+  console.log("edição: ",edition);
+  
   return (
     <Select value={edition ? edition : ""} onValueChange={(value) => value? onChange(value) :{}} items={items}>
       <SelectTrigger className="border-none w-fit">
