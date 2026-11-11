@@ -21,6 +21,7 @@ import { ReceiptText, Trash } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ConfirmationModal } from "@/lib/confirmationModal";
+import Link from "next/link";
 
 interface ISale {
   sold: number
@@ -116,7 +117,9 @@ export default function Page() {
   return (
     <>
       <div className="bg-accent" >
-        <Image onClick={() => redirect('/')} className="" height={50} width={50} src={'/averdade.svg'} alt="icone jornal a verdade"/>
+        <Link href={'/'}>
+          <Image className="" height={50} width={50} src={'/averdade.svg'} alt="icone jornal a verdade"/>
+        </Link>
       </div>
       <div className="bg-accent p-3 flex flex-col gap-4 place-items-center">
         <div className="flex justify-center">

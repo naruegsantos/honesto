@@ -36,6 +36,19 @@ import SelectEdition from "./components/selectEdition";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+
 export interface IEdition {
   id: number,
   name: string,
@@ -43,8 +56,7 @@ export interface IEdition {
   startDate: string,
   endDate: string,
   totalAmount: number,
-  individualAmount: number,
-  activity_amount: number,
+  activityAmount: number,
 }
 
 interface IActivity {
@@ -145,11 +157,7 @@ export default function Home() {
   }
 
   function selectEdition(value:string) {
-    console.log(value == '338');
-    
     const selected = editions?.find((i) => i.number == value)
-    console.log(selected);
-    
     setEdition(selected || null)
   }
 
@@ -174,8 +182,22 @@ export default function Home() {
   return (
     edition ?
     <>
+       <Dialog>
+        <DialogTrigger>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter className="flex flex-row justify-end ">
+            <DialogClose className={'w-fit'} render={<Button variant="default">Cancelar</Button>} />
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <header className="static top-0 h-12 w-screen px-2 md:px-4 bg-accent text-white flex justify-between items-center">
-
         {/* edition selector */}
         <ArrowBigLeft onClick={() => editionNavigation('prev')} className="w-fit cursor-pointer" size={'30'}/>
         <div className="text-black flex justify-center font-bold bg-white rounded-2xl px-5 w-fit min-w-60 md:min-w-64">
